@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        php: ['8.3']  # Adjust based on the repo's requirements
+        php: ['8.4']  # Adjust based on the repo's requirements
 
     steps:
       - uses: actions/checkout@v6

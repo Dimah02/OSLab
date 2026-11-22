@@ -32,7 +32,9 @@ class ControllerPermissionsTest extends TestCase
             '\App\Http\Controllers\Os\OsPublicController',
         ];
         foreach ($files as $file) {
-            $arrayControllers[] = '\App\Http\Controllers\\'.basename(str_replace('/', '\\', $file->getRelativePathName()), '.php');
+            // Não usar basename(): no Windows ele também trata "\" como separador e remove o subdiretório.
+            $relativePath = preg_replace('/\.php$/', '', $file->getRelativePathname());
+            $arrayControllers[] = '\App\Http\Controllers\\'.str_replace('/', '\\', $relativePath);
         }
         $arrayControllers = array_diff($arrayControllers, $arrayControllersExceptions);
         sort($arrayControllers);

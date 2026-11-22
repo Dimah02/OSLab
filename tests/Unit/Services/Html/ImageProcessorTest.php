@@ -59,9 +59,11 @@ class ImageProcessorTest extends TestCase
                 ';
         $preResult = $processor->trataImagemEnviada($html, $this->fileId);
 
-        $updatedText = substr($preResult, 0, -4);
-        $updatedText = preg_replace("/<img[^>]+\>/i", '', $updatedText, limit: 1);
-        $htmlMewImage = $updatedText.'<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAM0lEQVR4nGL56H+JATf4ctsTjywTHjmCYFTzyNDMyOefj0d6cpwtrWwe1TwyNAMCAAD//5GFBk7Ss+FqAAAAAElFTkSuQmCC"/></p>';
+        $this->assertEquals(2, $this->countFile());
+
+        // Remove a primeira imagem e adiciona uma nova (sem depender da estrutura exata gerada pelo libxml).
+        $updatedText = preg_replace("/<img[^>]+\>/i", '', $preResult, limit: 1);
+        $htmlMewImage = $updatedText.'<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAM0lEQVR4nGL56H+JATf4ctsTjywTHjmCYFTzyNDMyOefj0d6cpwtrWwe1TwyNAMCAAD//5GFBk7Ss+FqAAAAAElFTkSuQmCC"/>';
         $result = $processor->trataImagemEnviada($htmlMewImage, $this->fileId);
 
         $this->assertStringContainsString('/storage/wiki/'.$this->fileId.'/imgs/', $result);

@@ -24,7 +24,9 @@ class ImageProcessor
     {
         // tratando as imagens enviadas.
         $dom = new DOMDocument;
-        @$dom->loadHTML($this->utf8_to_iso8859_1($text), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        // Sem LIBXML_HTML_NOIMPLIED: o libxml2 >= 2.14 não aninha mais o conteúdo em um único
+        // elemento raiz, então o HTML é lido de dentro do <body> (ver final do método).
+        @$dom->loadHTML($this->utf8_to_iso8859_1($text), LIBXML_HTML_NODEFDTD);
         $dom->encoding = 'utf-8';
         $imageFile = $dom->getElementsByTagName('img');
         $imagePath = '/storage/wiki/'.$id.'/imgs/';
@@ -57,7 +59,16 @@ class ImageProcessor
             }
         }
 
-        return $dom->saveHTML($dom->documentElement);
+        $body = $dom->getElementsByTagName('body')->item(0);
+        if (! $body) {
+            return '';
+        }
+        $html = '';
+        foreach ($body->childNodes as $node) {
+            $html .= $dom->saveHTML($node);
+        }
+
+        return $html;
     }
 
     private function utf8_to_iso8859_1(string $string): string
